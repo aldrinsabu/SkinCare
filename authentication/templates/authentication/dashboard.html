@@ -6,7 +6,10 @@
 <div class="container">
     <h2 class="text-center my-4">Skincare WebApp Dashboard</h2>
     <a href="{% url 'register_customer' %}">
-        <button type="button">Register Customer</button>
+        <button type="button" class="btn btn-success">Register Customer</button>
+    </a>
+    <a href="{% url 'register_product' %}" class="ms-3">
+        <button type="button" class="btn btn-primary">Register Product</button>
     </a>
 </div>
 {% endblock %}
