@@ -9,7 +9,6 @@
     
     <!-- jQuery and Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -61,79 +60,93 @@
         {% for message in messages %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="font-size: 1.2rem; line-height: 1;">&times;</button>
         </div>
         {% endfor %}
     </div>
-    {% endif %}
+{% endif %}
 
-    <div class="container mt-5">
-        <h1 class="text-center">Product Recommendation</h1>
-        <form method="post" id="customer-form">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="customer_id" class="form-label">Enter Customer ID</label>
-                <input type="number" name="customer_id" id="customer_id" class="form-control" 
-                       value="{{ customer_id|default:'' }}" required>
+<div class="container mt-5">
+    <h1 class="text-center">Product Recommendation</h1>
+    <form method="post" id="customer-form">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="customer_id" class="form-label">Enter Customer ID</label>
+            <input type="number" name="customer_id" id="customer_id" class="form-control {% if form.customer_id.errors %}is-invalid{% endif %}" 
+                   value="{{ form.customer_id.value|default:'' }}" required>
+            {% for error in form.customer_id.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary">Get Recommendations</button>
+    </form>
+
+    {% if customer %}
+    <hr>
+    <h2>Customer Details</h2>
+    <p><strong>Name:</strong> {{ customer.name }}</p>
+    <p><strong>Skin Type:</strong> {{ customer.skin_type }}</p>
+    <p><strong>Skin Issues:</strong> {{ customer.skin_issues }}</p>
+
+    <hr>
+    <h2>Recommended Products</h2>
+    <form method="post" action="{% url 'checkout' %}" id="checkout-form">
+        {% csrf_token %}
+        <input type="hidden" name="customer_id" value="{{ customer.customer_id }}">
+        <input type="hidden" name="customer_name" value="{{ customer.name }}">
+        <input type="hidden" name="skin_type" value="{{ customer.skin_type }}">
+        <input type="hidden" name="skin_issues" value="{{ customer.skin_issues }}">
+        <div class="mb-3">
+            {% for product in products %}
+            <div class="form-check">
+                <input type="checkbox" name="selected_products" value="{{ product.name }}" class="form-check-input">
+                <label class="form-check-label">{{ product.name }} - ${{ product.price }}</label>
+                <input type="hidden" name="product_prices" value="{{ product.price }}">
             </div>
-            <button type="submit" class="btn btn-primary">Get Recommendations</button>
-        </form>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#checkoutModal">Checkout</button>
 
-        {% if customer %}
-        <hr>
-        <h2>Customer Details</h2>
-        <p><strong>Name:</strong> {{ customer.name }}</p>
-        <p><strong>Skin Type:</strong> {{ customer.skin_type }}</p>
-        <p><strong>Skin Issues:</strong> {{ customer.skin_issues }}</p>
-
-        <hr>
-        <h2>Recommended Products</h2>
-        <form method="post" action="{% url 'checkout' %}" id="checkout-form">
-            {% csrf_token %}
-            <input type="hidden" name="customer_id" value="{{ customer.customer_id }}">
-            <input type="hidden" name="customer_name" value="{{ customer.name }}">
-            <input type="hidden" name="skin_type" value="{{ customer.skin_type }}">
-            <input type="hidden" name="skin_issues" value="{{ customer.skin_issues }}">
-            <div class="mb-3">
-                {% for product in products %}
-                <div class="form-check">
-                    <input type="checkbox" name="selected_products" value="{{ product.name }}" class="form-check-input">
-                    <label class="form-check-label">{{ product.name }} - ${{ product.price }}</label>
-                    <input type="hidden" name="product_prices" value="{{ product.price }}">
-                </div>
-                {% endfor %}
-            </div>
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#checkoutModal">Checkout</button>
-        
-            <!-- Checkout Modal -->
-            <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="checkoutModalLabel">Checkout Summary</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p><strong>Customer ID:</strong> {{ customer.customer_id }}</p>
-                            <p><strong>Name:</strong> {{ customer.name }}</p>
-                            <p><strong>Skin Type:</strong> {{ customer.skin_type }}</p>
-                            <p><strong>Skin Issues:</strong> {{ customer.skin_issues }}</p>
-                            <hr>
-                            <h5>Selected Products</h5>
-                            <ul id="selected-products-list"></ul>
-                            <p><strong>Total Price:</strong> $<span id="total-price"></span></p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Payment Verified</button>
-                        </div>
+        <!-- Checkout Modal -->
+        <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="checkoutModalLabel">Checkout Summary</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Customer ID:</strong> {{ customer.customer_id }}</p>
+                        <p><strong>Name:</strong> {{ customer.name }}</p>
+                        <p><strong>Skin Type:</strong> {{ customer.skin_type }}</p>
+                        <p><strong>Skin Issues:</strong> {{ customer.skin_issues }}</p>
+                        <hr>
+                        <h5>Selected Products</h5>
+                        <ul id="selected-products-list"></ul>
+                        <p><strong>Total Price:</strong> $<span id="total-price"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Payment Verified</button>
                     </div>
                 </div>
             </div>
-        </form>
-        {% endif %}
+        </div>
+    </form>
+    {% endif %}
+</div>
     <script>
+        // Automatically hide the success message after 3 seconds
+        setTimeout(function() {
+            const messageContainer = document.getElementById('message-container');
+            if (messageContainer) {
+                messageContainer.style.display = 'none';
+            }
+        }, 3000); // 3 seconds
+        
         // Event listener for the Checkout button to populate the modal
-        document.querySelector('.btn-success[data-bs-target="#checkoutModal"]').addEventListener('click', function () {
+    document.querySelector('.btn-success[data-bs-target="#checkoutModal"]').addEventListener('click', function (event) {
         const selectedProducts = [];
         let totalPrice = 0;
 
@@ -144,6 +157,14 @@
             selectedProducts.push({ name: productName, price: productPrice });
             totalPrice += productPrice;
         });
+
+        // Check if total price is 0
+        if (totalPrice === 0) {
+            event.preventDefault(); // Prevent the modal from opening
+            const checkoutForm = document.getElementById('checkout-form');
+            checkoutForm.submit(); // Submit the form to the backend for validation
+            return;
+        }
 
         // Populate the modal with selected products
         const productList = document.getElementById('selected-products-list');
@@ -156,21 +177,13 @@
 
         // Update total price
         document.getElementById('total-price').textContent = totalPrice.toFixed(2);
-        });
-
+    });
+        
         // Handle payment verification
         document.getElementById('payment-verified').addEventListener('click', function () {
             alert('Payment Verified!');
             // Optionally, you can submit the form or make an AJAX request here
         });
-
-        // Automatically hide the success message after 3 seconds
-        setTimeout(function () {
-            const messageContainer = document.getElementById('message-container');
-            if (messageContainer) {
-                messageContainer.style.display = 'none';
-            }
-        }, 3000); // 3000ms = 3 seconds
     </script>
 </body>
 </html>

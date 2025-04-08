@@ -9,8 +9,7 @@
     
     <!-- jQuery and Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
@@ -57,14 +56,14 @@
 
     <!-- Main Content -->
     <div class="container mt-5">
-        <!-- Success Message -->
+        <!-- Success and Error Messages -->
         {% if messages %}
-        <div id="success-message">
+        <div id="message-container">
             {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="font-size: 1.2rem; line-height: 1;">&times;</button>
-                </div>
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="font-size: 1.2rem; line-height: 1;">&times;</button>
+            </div>
             {% endfor %}
         </div>
         {% endif %}
@@ -76,34 +75,49 @@
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="id_name" class="form-label">Product Name</label>
-                        <input type="text" name="name" id="id_name" class="form-control" value="{{ form.name.value|default:'' }}">
+                        <input type="text" name="name" id="id_name" class="form-control {% if form.name.errors %}is-invalid{% endif %}" value="{{ form.name.value|default:'' }}">
+                        {% for error in form.name.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
                     </div>
                     <div class="mb-3">
                         <label for="id_description" class="form-label">Description</label>
-                        <textarea name="description" id="id_description" class="form-control" rows="3">{{ form.description.value|default:'' }}</textarea>
+                        <textarea name="description" id="id_description" class="form-control {% if form.description.errors %}is-invalid{% endif %}" rows="3">{{ form.description.value|default:'' }}</textarea>
+                        {% for error in form.description.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
                     </div>
                     <div class="mb-3">
                         <label for="id_skin_type" class="form-label">Skin Type</label>
-                        <select name="skin_type" id="id_skin_type" class="form-select">
+                        <select name="skin_type" id="id_skin_type" class="form-select {% if form.skin_type.errors %}is-invalid{% endif %}">
                             {% for value, label in form.skin_type.field.choices %}
                                 <option value="{{ value }}" {% if form.skin_type.value == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
+                        {% for error in form.skin_type.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
                     </div>
                     <div class="mb-3">
                         <label for="id_skin_issues" class="form-label">Skin Issues</label>
                         <div>
                             {% for value, label in form.skin_issues.field.choices %}
                                 <div class="form-check">
-                                    <input type="radio" name="skin_issues" id="id_skin_issues_{{ forloop.counter }}" class="form-check-input" value="{{ value }}" {% if form.skin_issues.value == value %}checked{% endif %}>
+                                    <input type="checkbox" name="skin_issues" id="id_skin_issues_{{ forloop.counter }}" class="form-check-input {% if form.skin_issues.errors %}is-invalid{% endif %}" value="{{ value }}" {% if value in form.skin_issues.value %}checked{% endif %}>
                                     <label for="id_skin_issues_{{ forloop.counter }}" class="form-check-label">{{ label }}</label>
                                 </div>
+                            {% endfor %}
+                            {% for error in form.skin_issues.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
                             {% endfor %}
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="id_price" class="form-label">Price</label>
-                        <input type="number" name="price" id="id_price" class="form-control" value="{{ form.price.value|default:'' }}" step="0.01">
+                        <input type="number" name="price" id="id_price" class="form-control {% if form.price.errors %}is-invalid{% endif %}" value="{{ form.price.value|default:'' }}" step="0.01">
+                        {% for error in form.price.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Register</button>
                 </form>
@@ -112,9 +126,9 @@
     </div>
     <script>
         setTimeout(function() {
-            const successMessage = document.getElementById('success-message');
-            if (successMessage) {
-                successMessage.style.display = 'none';
+            const messageContainer = document.getElementById('message-container');
+            if (messageContainer) {
+                messageContainer.style.display = 'none';
             }
         }, 3000); // 3 seconds
     </script>

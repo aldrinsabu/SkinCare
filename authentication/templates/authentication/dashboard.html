@@ -3,19 +3,82 @@
 {% block title %}Dashboard - Skincare WebApp{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2 class="text-center my-4">Skincare WebApp Dashboard</h2>
-    <a href="{% url 'register_customer' %}">
-        <button type="button" class="btn btn-success">Register Customer</button>
-    </a>
-    <a href="{% url 'register_product' %}" class="ms-3">
-        <button type="button" class="btn btn-primary">Register Product</button>
-    </a>
-    <a href="{% url 'recommend_products' %}" class="ms-3">
-        <button type="button" class="btn btn-info">Product Recommendation</button>
-    </a>
-    <a class="nav-link" href="{% url 'list_customers' %}">View Customers</a>
-    <a class="nav-link" href="{% url 'list_products' %}">View Products</a>
-    <a class="nav-link" href="{% url 'list_checkouts' %}">View Checkouts</a>
+<div class="container mt-5">
+    <h2 class="text-center my-4">Welcome to the Skincare WebApp Dashboard</h2>
+    <div class="row">
+        <!-- Register Customer -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-lg">
+                <div class="card-body">
+                    <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Register Customer</h5>
+                    <p class="card-text">Add new customers to the system.</p>
+                    <a href="{% url 'register_customer' %}" class="btn btn-success">Register</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Product -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-lg">
+                <div class="card-body">
+                    <i class="fas fa-box fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Register Product</h5>
+                    <p class="card-text">Add new skincare products to the inventory.</p>
+                    <a href="{% url 'register_product' %}" class="btn btn-primary">Register</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Recommendation -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-lg">
+                <div class="card-body">
+                    <i class="fas fa-lightbulb fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Product Recommendation</h5>
+                    <p class="card-text">Recommend products based on customer needs.</p>
+                    <a href="{% url 'recommend_products' %}" class="btn btn-info">Recommend</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- View Customers -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-lg">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">View Customers</h5>
+                    <p class="card-text">View all registered customers.</p>
+                    <a href="{% url 'list_customers' %}" class="btn btn-warning">View</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Products -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-lg">
+                <div class="card-body">
+                    <i class="fas fa-boxes fa-3x text-secondary mb-3"></i>
+                    <h5 class="card-title">View Products</h5>
+                    <p class="card-text">View all registered skincare products.</p>
+                    <a href="{% url 'list_products' %}" class="btn btn-secondary">View</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Checkouts -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-lg">
+                <div class="card-body">
+                    <i class="fas fa-shopping-cart fa-3x text-danger mb-3"></i>
+                    <h5 class="card-title">View Checkouts</h5>
+                    <p class="card-text">View all completed checkouts.</p>
+                    <a href="{% url 'list_checkouts' %}" class="btn btn-danger">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -73,3 +73,15 @@ class ProductRegistrationForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'description', 'skin_type', 'skin_issues', 'price']
+    
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if price is not None and price <= 0:
+            raise forms.ValidationError("Price must be greater than zero.")
+        return price
+    
+class RecommendProductsForm(forms.Form):
+    customer_id = forms.IntegerField(label="Customer ID", required=True, widget=forms.NumberInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Enter Customer ID'
+    }))

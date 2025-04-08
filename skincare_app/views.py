@@ -9,6 +9,7 @@ from django.contrib import messages
 from .models import Customer
 from .models import Product
 from .models import Checkout, CheckoutProduct
+from .forms import RecommendProductsForm
 
 def register_customer(request):
     if request.method == 'POST':
@@ -38,34 +39,42 @@ def register_product(request):
 
 def recommend_products(request):
     if request.method == 'POST':
-        customer_id = request.POST.get('customer_id')
+        form = RecommendProductsForm(request.POST)
 
-        if not customer_id:
-            messages.error(request, "Customer ID is required.")
-            return render(request, 'recommendations/recommend_products.html')
+        if form.is_valid():
+            customer_id = form.cleaned_data['customer_id']
 
-        try:
-            customer = get_object_or_404(Customer, customer_id=customer_id)
-        except Exception as e:
-            print(f"Error fetching customer: {e}")
-            messages.error(request, "Customer not found.")
-            return render(request, 'recommendations/recommend_products.html')
+            try:
+                # Fetch the customer by ID
+                customer = get_object_or_404(Customer, customer_id=customer_id)
+            except Exception as e:
+                print(f"Error fetching customer: {e}")
+                messages.error(request, "Customer not found.")
+                return render(request, 'recommendations/recommend_products.html', {'form': form})
 
-        skin_type = customer.skin_type
-        skin_issues = customer.skin_issues.split(',') if customer.skin_issues else []
+            skin_type = customer.skin_type
+            skin_issues = customer.skin_issues.split(',') if customer.skin_issues else []
 
-        # Fetch products matching the customer's skin type and skin issues
-        products = Product.objects.filter(skin_type=skin_type).filter(
-            skin_issues__in=skin_issues
-        ).distinct()
+            # Fetch products matching the customer's skin type and skin issues
+            products = Product.objects.filter(skin_type=skin_type).filter(
+                skin_issues__in=skin_issues
+            ).distinct()
 
-        return render(request, 'recommendations/recommend_products.html', {
-            'customer': customer,
-            'products': products,
-            'customer_id': customer_id,  # Pass customer_id to the template
-        })
+            # Render the template with customer and product data
+            return render(request, 'recommendations/recommend_products.html', {
+                'form': form,
+                'customer': customer,
+                'products': products,
+                'customer_id': customer_id
+            })
+        else:
+            # If the form is invalid, re-render the page with errors
+            messages.error(request, "Please correct the errors below.")
+            return render(request, 'recommendations/recommend_products.html', {'form': form})
 
-    return render(request, 'recommendations/recommend_products.html')
+    # Handle GET request (initial page load)
+    form = RecommendProductsForm()
+    return render(request, 'recommendations/recommend_products.html', {'form': form})
 
 def checkout(request):
     if request.method == 'POST':
