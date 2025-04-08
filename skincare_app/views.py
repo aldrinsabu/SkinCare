@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from .models import Customer, Product, Checkout, CheckoutProduct
 from django.contrib import messages
-
+from .models import Customer
 
 def register_customer(request):
     if request.method == 'POST':
@@ -117,3 +117,7 @@ def checkout(request):
         return redirect('recommend_products')
 
     return render(request, 'recommendations/recommend_products.html')
+
+def list_customers(request):
+    customers = Customer.objects.all()  # Fetch all customers from the database
+    return render(request, 'customers/list_customers.html', {'customers': customers})
