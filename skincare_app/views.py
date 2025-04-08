@@ -7,6 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Customer, Product, Checkout, CheckoutProduct
 from django.contrib import messages
 from .models import Customer
+from .models import Product 
 
 def register_customer(request):
     if request.method == 'POST':
@@ -121,3 +122,7 @@ def checkout(request):
 def list_customers(request):
     customers = Customer.objects.all()  # Fetch all customers from the database
     return render(request, 'customers/list_customers.html', {'customers': customers})
+
+def list_products(request):
+    products = Product.objects.all()  # Fetch all products from the database
+    return render(request, 'products/list_products.html', {'products': products})
