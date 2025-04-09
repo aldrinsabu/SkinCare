@@ -75,7 +75,7 @@
                     <td>{{ checkout.customer_name }}</td>
                     <td>{{ checkout.skin_type }}</td>
                     <td>{{ checkout.skin_issues }}</td>
-                    <td>${{ checkout.total_price }}</td>
+                    <td>₹{{ checkout.total_price }}</td>
                     <td>
                         {% if checkout.payment_verified %}
                         <span class="badge badge-success">Yes</span>
@@ -86,7 +86,7 @@
                     <td>
                         <ul>
                             {% for product in checkout.products.all %}
-                            <li>{{ product.product_name }} - ${{ product.product_price }}</li>
+                            <li>{{ product.product_name }} - ₹{{ product.product_price }}</li>
                             {% endfor %}
                         </ul>
                     </td>
