@@ -122,7 +122,7 @@ def checkout(request):
             )
 
         # Add a success message
-        messages.success(request, f"Payment verified for {customer_name} (ID: {customer_id}). Total: ${total_price:.2f}")
+        messages.success(request, f"Payment verified for {customer_name} (ID: {customer_id}).")
 
         # Redirect back to the recommendation page
         return redirect('recommend_products')
