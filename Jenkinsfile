@@ -1,30 +1,40 @@
 pipeline {
     agent any
+
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main',
-                    credentialsId: 'skincareID', 
-                    url: 'https://github.com/aldrinsabu/SkinCare.git'
+                echo 'Checking out code...'
+                checkout([ 
+                    $class: 'GitSCM', 
+                    branches: [[name: '*/main']], 
+                    extensions: [], 
+                    userRemoteConfigs: [[ 
+                        url: 'https://github.com/aldrinsabu/SkinCare.git', 
+                        credentialsId: 'skincareID' 
+                    ]] 
+                ])
             }
         }
+
         stage('Build') {
             steps {
-                echo 'Building project...'
-                // Add build steps here
+                echo 'Building Docker Compose services...'
+                bat 'docker-compose -p skincareproject build'
             }
         }
+
         stage('Run Tests') {
             steps {
-                echo 'Running tests...'
-                // Add test execution commands here
+                echo 'Skipping tests for now...'
             }
         }
+
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
-                // Add deployment steps here
+                echo 'Deploying the application using Docker Compose...'
+                bat 'docker-compose -p skincareproject up -d'
             }
-        }
-    }
+        }
+    }
 }
