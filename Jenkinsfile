@@ -35,6 +35,6 @@ pipeline {
                 echo 'Deploying the application using Docker Compose...'
                 bat 'docker-compose -p skincareproject up -d'
             }
-        }
-    }
+        }
+    }
 }
